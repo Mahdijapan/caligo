@@ -1,0 +1,1528 @@
+<?php
+/*
+@datisnetwork
+*/
+
+// set a cronjob 1 min !
+
+error_reporting(0);
+ini_set('display_errors', 0);
+ini_set('memory_limit', -1);
+ini_set('max_execution_time', -1);
+if(!is_dir('files')){
+mkdir('files');
+}
+if(!file_exists('madeline.php')){
+copy('https://phar.madelineproto.xyz/madeline.php', 'madeline.php');
+}
+if(!file_exists('online.txt')){
+file_put_contents('online.txt','off');
+}
+include 'madeline.php';
+$settings = [];
+$settings['logger']['max_size'] = 5*1024*1024;
+$MadelineProto = new \danog\MadelineProto\API('oghab.madeline', $settings);
+$MadelineProto->start();
+
+function closeConnection($message = 'OghabSelf Is Running ...'){
+ if (php_sapi_name() === 'cli' || isset($GLOBALS['exited'])) {
+  return;
+ }
+// ShahreSource
+    @ob_end_clean();
+    @header('Connection: close');
+    ignore_user_abort(true);
+    ob_start();
+    echo "$message";
+    $size = ob_get_length();
+    @header("Content-Length: $size");
+    @header('Content-Type: text/html');
+    ob_end_flush();
+    flush();
+    $GLOBALS['exited'] = true;
+}
+function shutdown_function($lock)
+{
+   try {
+    $a = fsockopen((isset($_SERVER['HTTPS']) && @$_SERVER['HTTPS'] ? 'tls' : 'tcp').'://'.@$_SERVER['SERVER_NAME'], @$_SERVER['SERVER_PORT']);
+    fwrite($a, @$_SERVER['REQUEST_METHOD'].' '.@$_SERVER['REQUEST_URI'].' '.@$_SERVER['SERVER_PROTOCOL']."\r\n".'Host: '.@$_SERVER['SERVER_NAME']."\r\n\r\n");
+    flock($lock, LOCK_UN);
+    fclose($lock);
+} catch(Exception $v){}
+}
+if (!file_exists('bot.lock')) {
+ touch('bot.lock');
+}
+// ShahreSource
+$lock = fopen('bot.lock', 'r+');
+$try = 1;
+$locked = false;
+while (!$locked) {
+ $locked = flock($lock, LOCK_EX | LOCK_NB);
+ if (!$locked) {
+  closeConnection();
+ if ($try++ >= 30) {
+ exit;
+ }
+   sleep(1);
+ }
+}
+if(!file_exists('data.json')){
+ file_put_contents('data.json', '{"power":"on","adminStep":"","typing":"off","echo":"off","markread":"off","poker":"off","enemies":[],"answering":[]}');
+}
+// Coded by : @ShahreSource
+class EventHandler extends \danog\MadelineProto\EventHandler
+{
+public function __construct($MadelineProto){
+parent::__construct($MadelineProto);
+}
+public function onUpdateSomethingElse($update)
+{
+yield $this->onUpdateNewMessage($update);
+}
+public function onUpdateNewChannelMessage($update)
+{
+yield $this->onUpdateNewMessage($update);
+}
+public function onUpdateNewMessage($update){
+$from_id = isset($update['message']['from_id']) ? $update['message']['from_id']:'';
+  try {
+ if(isset($update['message']['message'])){
+ $text = $update['message']['message'];
+ $msg_id = $update['message']['id'];
+ $message = isset($update['message']) ? $update['message']:'';
+ $MadelineProto = $this;
+ $me = yield $MadelineProto->get_self();
+ $admin = $me['id'];
+ $chID = yield $MadelineProto->get_info($update);
+ $peer = $chID['bot_api_id'];
+ $type3 = $chID['type'];
+ $data = json_decode(file_get_contents("data.json"), true);
+ $step = $data['adminStep'];
+ if(!file_exists('ooo')){
+ file_put_contents('ooo', '');
+ }
+  if(file_exists('ooo') && file_get_contents('online.txt') == 'on' && (time() - filectime('ooo')) >= 30){
+   @unlink('ooo');
+   @file_put_contents('ooo', '');
+   yield $MadelineProto->account->updateStatus(['offline' => false]);
+  }
+ if($from_id == $admin){
+   if(preg_match("/^[\/\#\!]?(bot) (on|off)$/i", $text)){
+     preg_match("/^[\/\#\!]?(bot) (on|off)$/i", $text, $m);
+     $data['power'] = $m[2];
+     file_put_contents("data.json", json_encode($data));
+     yield $MadelineProto->messages->editMessage(['peer' => $peer,'id' => $msg_id,'message' => "Bot Now Is $m[2]"]);
+   }
+   if(preg_match("/^[\/\#\!]?(online) (on|off)$/i", $text)){
+  preg_match("/^[\/\#\!]?(online) (on|off)$/i", $text, $m);
+  file_put_contents('online.txt', $m[2]);
+yield $MadelineProto->messages->editMessage(['peer' => $peer,'id' => $msg_id,'message' => "Online Mode Now Is $m[2]"]);
+   }
+if($text=='salam' or $text=='سلام'){
+yield $MadelineProto->messages->sendMessage(['peer' => $peer, 'message' => 'سلام درود']);
+yield $MadelineProto->messages->editMessage(['peer' => $peer, 'id' => $msg_id +1, 'message' => 'تست 1']);
+yield $MadelineProto->messages->editMessage(['peer' => $peer, 'id' => $msg_id +1, 'message' => 'تست 2']);
+    
+}
+
+
+if($text=='ماشین' or $text=='car'){
+yield $MadelineProto->messages->sendMessage(['peer' => $peer, 'message' => '💣________________🏎']);
+
+yield $MadelineProto->messages->editMessage(['peer' => $peer, 'id' => $msg_id +1, 'message' => '💣_______________🏎']);
+
+yield $MadelineProto->messages->editMessage(['peer' => $peer, 'id' => $msg_id +1, 'message' => '💣______________🏎']);
+
+yield $MadelineProto->messages->editMessage(['peer' => $peer, 'id' => $msg_id +1, 'message' => '💣_____________🏎']);
+
+yield $MadelineProto->messages->editMessage(['peer' => $peer, 'id' => $msg_id +1, 'message' => '💣____________🏎']);
+
+yield $MadelineProto->messages->editMessage(['peer' => $peer, 'id' => $msg_id +1, 'message' => '💣___________🏎']);
+
+yield $MadelineProto->messages->editMessage(['peer' => $peer, 'id' => $msg_id +1, 'message' => '💣__________🏎']);
+
+yield $MadelineProto->messages->editMessage(['peer' => $peer, 'id' => $msg_id +1, 'message' => '💣_________🏎']);
+
+yield $MadelineProto->messages->editMessage(['peer' => $peer, 'id' => $msg_id +1, 'message' => '💣________🏎']);
+
+yield $MadelineProto->messages->editMessage(['peer' => $peer, 'id' => $msg_id +1, 'message' => '💣_______🏎']);
+
+yield $MadelineProto->messages->editMessage(['peer' => $peer, 'id' => $msg_id +1, 'message' => '💣______🏎']);
+
+yield $MadelineProto->messages->editMessage(['peer' => $peer, 'id' => $msg_id +1, 'message' => '💣____🏎']);
+
+yield $MadelineProto->messages->editMessage(['peer' => $peer, 'id' => $msg_id +1, 'message' => '💣___🏎']);
+
+yield $MadelineProto->messages->editMessage(['peer' => $peer, 'id' => $msg_id +1, 'message' => '💣__🏎']);
+
+yield $MadelineProto->messages->editMessage(['peer' => $peer, 'id' => $msg_id +1, 'message' => '💣_🏎']);
+
+yield $MadelineProto->messages->editMessage(['peer' => $peer, 'id' => $msg_id +1, 'message' => '💥BOOM💥']);
+}
+
+	if ($text == 'time' or $text=='ساعت'  or $text=='تایم') {
+	    date_default_timezone_set('Asia/Tehran');
+	yield $MadelineProto->messages->sendMessage(['peer' => $peer, 'message' => ';)']);
+	for ($i=1; $i <= 5; $i++){
+	yield $MadelineProto->messages->editMessage(['peer' => $peer, 'id' => $msg_id +1, 'message' => date('H:i:s')]);
+	yield $MadelineProto->sleep(1);
+	}
+	}
+
+if ($text == 'تاریخ شمسی') {
+include 'jdf.php';
+$fasl = jdate('f');
+$month_name= jdate('F');
+$day_name= jdate('l');
+$tarikh = jdate('y/n/j');
+$hour = jdate('H:i:s - a');
+$animal = jdate('q');
+yield $MadelineProto->messages->sendMessage(['peer' => $peer, 'message' => "امروز  $day_name  |$tarikh|
+
+نام ماه🌙: $month_name
+
+نام فصل ❄️: $fasl
+
+ساعت ⌚️: $hour
+
+نام حیوان امسال 🐋: $animal
+"]);
+}
+
+if ($text == 'تاریخ میلادی') {
+date_default_timezone_set('UTC');
+$rooz = date("l"); // روز
+$tarikh = date("Y/m/d"); // سال
+$mah = date("F"); // نام ماه
+$hour = date('H:i:s - A'); // ساعت
+yield $MadelineProto->messages->sendMessage(['peer' => $peer, 'message' => "today  $rooz |$tarikh|
+
+month name🌙: $mah
+
+time⌚️: $hour"]);
+}
+
+  if ($text == 'ping' or $text == '/ping' or $text == 'پینگ') {
+yield $MadelineProto->messages->editMessage(['peer' => $peer,'id' => $msg_id,'message' => "Pong :)"]);
+  }
+ if(preg_match("/^[\/\#\!]?(setanswer) (.*)$/i", $text)){
+$ip = trim(str_replace("/setanswer ","",$text));
+$ip = explode("|",$ip."|||||");
+$txxt = trim($ip[0]);
+$answeer = trim($ip[1]);
+if(!isset($data['answering'][$txxt])){
+$data['answering'][$txxt] = $answeer;
+file_put_contents("data.json", json_encode($data));
+yield $MadelineProto->messages->sendMessage(['peer' => $peer, 'message' => "کلمه جدید به لیست پاسخ شما اضافه شد👌🏻"]);
+}else{
+yield $MadelineProto->messages->sendMessage(['peer' => $peer, 'message' => "این کلمه از قبل موجود است :/"]);
+ }
+}
+
+// ShahreSource
+
+if(preg_match("/^[\/\#\!]?(upload) (.*)$/i", $text)){
+preg_match("/^[\/\#\!]?(upload) (.*)$/i", $text, $a);
+$oldtime = time();
+$link = $a[2];
+$ch = curl_init($link);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+curl_setopt($ch, CURLOPT_HEADER, TRUE);
+curl_setopt($ch, CURLOPT_NOBODY, TRUE);
+$data = curl_exec($ch);
+$size1 = curl_getinfo($ch, CURLINFO_CONTENT_LENGTH_DOWNLOAD); curl_close($ch);
+$size = round($size1/1024/1024,1);
+if($size <= 150){
+yield $MadelineProto->messages->editMessage(['peer' => $peer,'id' => $msg_id,'message' => '🌵 Please Wait...
+💡 FileSize : '.$size.'MB']);
+$path = parse_url($link, PHP_URL_PATH);
+$filename = basename($path);
+copy($link, "files/$filename");
+yield $MadelineProto->messages->sendMedia([
+ 'peer' => $peer,
+ 'media' => [
+ '_' => 'inputMediaUploadedDocument',
+ 'file' => "files/$filename",
+ 'attributes' => [['_' => 'documentAttributeFilename',
+ 'file_name' => "$filename"]]],
+ 'message' => "🔖 Name : $filename
+💠 [Your File !]($link)
+💡 Size : ".$size.'MB',
+ 'parse_mode' => 'Markdown'
+]);
+$t=time()-$oldtime;
+yield $MadelineProto->messages->editMessage(['peer' => $peer,'id' => $msg_id,'message' => "✅ Uploaded ($t".'s)']);
+unlink("files/$filename");
+} else {
+yield $MadelineProto->messages->editMessage(['peer' => $peer,'id' => $msg_id,'message' => '⚠️ خطا : حجم فایل بیشتر 150MB است!']);
+}
+}
+ if(preg_match("/^[\/\#\!]?(delanswer) (.*)$/i", $text)){
+preg_match("/^[\/\#\!]?(delanswer) (.*)$/i", $text, $text);
+$txxt = $text[2];
+if(isset($data['answering'][$txxt])){
+unset($data['answering'][$txxt]);
+file_put_contents("data.json", json_encode($data));
+yield $MadelineProto->messages->sendMessage(['peer' => $peer, 'message' => "کلمه مورد نظر از لیست پاسخ حذف شد👌🏻"]);
+}else{
+yield $MadelineProto->messages->sendMessage(['peer' => $peer, 'message' => "این کلمه در لیست پاسخ وجود ندارد :/"]);
+ }
+}
+
+// ShahreSource
+
+if ($text == '/die;') {
+yield $MadelineProto->messages->editMessage(['peer' => $peer,'id' => $msg_id,'message' => '!..!']);
+  yield $this->restart();
+  die;
+}
+
+if($text == '/id' or $text == 'id'){
+  if (isset($message['reply_to_msg_id'])) {
+   if($type3 == 'supergroup' or $type3 == 'chat'){
+  $gmsg = yield $MadelineProto->channels->getMessages(['channel' => $peer, 'id' => [$msg_id]]);
+  $messag1 = $gmsg['messages'][0]['reply_to_msg_id'];
+  $gms = yield $MadelineProto->channels->getMessages(['channel' => $peer, 'id' => [$messag1]]);
+  $messag = $gms['messages'][0]['from_id'];
+  yield $MadelineProto->messages->editMessage(['peer' => $peer,'id' => $msg_id,'message' => 'YourID : '.$messag, 'parse_mode' => 'markdown']);
+} else {
+	if($type3 == 'user'){
+ yield $MadelineProto->messages->editMessage(['peer' => $peer,'id' => $msg_id,'message' => "YourID : `$peer`", 'parse_mode' => 'markdown']);
+}}} else {
+  yield $MadelineProto->messages->editMessage(['peer' => $peer,'id' => $msg_id,'message' => "GroupID : `$peer`", 'parse_mode' => 'markdown']);
+}
+}
+
+if(isset($message['reply_to_msg_id'])){
+if($text == 'unblock' or $text == '/unblock' or $text == '!unblock'){
+if($type3 == 'supergroup' or $type3 == 'chat'){
+  $gmsg = yield $MadelineProto->channels->getMessages(['channel' => $peer, 'id' => [$msg_id]]);
+  $messag1 = $gmsg['messages'][0]['reply_to_msg_id'];
+  $gms = yield $MadelineProto->channels->getMessages(['channel' => $peer, 'id' => [$messag1]]);
+  $messag = $gms['messages'][0]['from_id'];
+  yield $MadelineProto->contacts->unblock(['id' => $messag]);
+  yield $MadelineProto->messages->editMessage(['peer' => $peer,'id' => $msg_id,'message' => "UnBlocked!"]);
+  } else {
+  	if($type3 == 'user'){
+yield $MadelineProto->contacts->unblock(['id' => $peer]); yield $MadelineProto->messages->editMessage(['peer' => $peer,'id' => $msg_id,'message' => "UnBlocked!"]);
+}
+}
+}
+
+if($text == 'block' or $text == '/block' or $text == '!block'){
+if($type3 == 'supergroup' or $type3 == 'chat'){
+  $gmsg = yield $MadelineProto->channels->getMessages(['channel' => $peer, 'id' => [$msg_id]]);
+  $messag1 = $gmsg['messages'][0]['reply_to_msg_id'];
+  $gms = yield $MadelineProto->channels->getMessages(['channel' => $peer, 'id' => [$messag1]]);
+  $messag = $gms['messages'][0]['from_id'];
+  yield $MadelineProto->contacts->block(['id' => $messag]);
+  yield $MadelineProto->messages->editMessage(['peer' => $peer,'id' => $msg_id,'message' => "Blocked!"]);
+  } else {
+ 	if($type3 == 'user'){
+yield $MadelineProto->contacts->block(['id' => $peer]); yield $MadelineProto->messages->editMessage(['peer' => $peer,'id' => $msg_id,'message' => "Blocked!"]);
+}
+}
+}
+
+if(preg_match("/^[\/\#\!]?(setenemy) (.*)$/i", $text)){
+$gmsg = yield $MadelineProto->channels->getMessages(['channel' => $peer, 'id' => [$msg_id]]);
+  $messag1 = $gmsg['messages'][0]['reply_to_msg_id'];
+  $gmsg = yield $MadelineProto->channels->getMessages(['channel' => $peer, 'id' => [$messag1]]);
+  $messag = $gmsg['messages'][0]['from_id'];
+  if(!in_array($messag, $data['enemies'])){
+    $data['enemies'][] = $messag;
+    file_put_contents("data.json", json_encode($data));
+    yield $MadelineProto->contacts->block(['id' => $messag]);
+    yield $MadelineProto->messages->sendMessage(['peer' => $peer, 'message' => "$messag is now in enemy list"]);
+  } else {
+    yield $MadelineProto->messages->sendMessage(['peer' => $peer, 'message' => "This User Was In EnemyList"]);
+  }
+}
+if(preg_match("/^[\/\#\!]?(delenemy) (.*)$/i", $text)){
+$gmsg = yield $MadelineProto->channels->getMessages(['channel' => $peer, 'id' => [$msg_id]]);
+  $messag1 = $gmsg['messages'][0]['reply_to_msg_id'];
+  $gmsg = yield $MadelineProto->channels->getMessages(['channel' => $peer, 'id' => [$messag1]]);
+  $messag = $gmsg['messages'][0]['from_id'];
+  if(in_array($messag, $data['enemies'])){
+    $k = array_search($messag, $data['enemies']);
+    unset($data['enemies'][$k]);
+    file_put_contents("data.json", json_encode($data));
+    yield $MadelineProto->contacts->unblock(['id' => $messag]);
+    yield $MadelineProto->messages->sendMessage(['peer' => $peer, 'message' => "$messag deleted from enemy list"]);
+  } else{
+    yield $MadelineProto->messages->sendMessage(['peer' => $peer, 'message' => "This User Wasn't In EnemyList"]);
+  }
+ }
+}
+
+if(preg_match("/^[\/\#\!]?(answerlist)$/i", $text)){
+if(count($data['answering']) > 0){
+$txxxt = "لیست پاسخ ها :
+";
+$counter = 1;
+foreach($data['answering'] as $k => $ans){
+$txxxt .= "$counter: $k => $ans \n";
+$counter++;
+}
+yield $MadelineProto->messages->sendMessage(['peer' => $peer, 'message' => $txxxt]);
+}else{
+yield $MadelineProto->messages->sendMessage(['peer' => $peer, 'message' => "پاسخی وجود ندارد!"]);
+  }
+ }
+ if($text == 'help' or $text == '/help'){
+$mem_using = round(memory_get_usage() / 1024 / 1024,1);
+yield $MadelineProto->messages->sendMessage(['peer' => $peer, 'message' => "راهنمای سلف بات میدلاین
+`/bot ` [on] or [off]
+• خاموش و روشن کردن ربات
+
+`ping`
+• دریافت وضعیت ربات
+
+`online ` on یا off
+• روشن و خاموش کردن حالت همیشه انلاین
+
+`typing ` on یا off
+• روشن و خاموش کردن حالت تایپینگ بعد از هر پیام
+
+`markread ` on یا off
+• روشن و خاموش کردن حالت خوانده شدن پیام ها
+
+`flood ` [NUMBER] [TEXT]
+•  اسپم پیام در یک متن
+
+`flood2 ` [NUMBER] [TEXT]
+•  اسپم بصورت پیام های مکرر
+
+`contacts ` on یا off
+• فعال شدن حالت ادد شدن مخاطبین به صورت خودکار
+
+`adduser ` [UserID] [IDGroup]
+• ادد کردن یه کاربر به گروه موردنظر
+
+`setusername ` [text]
+• تنظیم نام کاربری (آیدی) ربات
+
+`profile ` [NAME] `|` [LAST] `|` [BIO]
+• تنظیم نام اسم , فامیل و بیوگرافی ربات
+
+`/blue ` [TEXT-EN]
+• تبدیل متن انگلیسی به فنت Blue
+
+`/sticker ` [TEXT]
+• تبدیل متن به استیکر
+
+`/upload ` [URL]
+• اپلود فایل از لینک
+
+`/time ` [Time-Zone-EN] (iran)
+• دریافت ساعت و تاریخ محلی
+
+`/weather ` [TEXT-EN]
+• آب و هوای منطقه
+
+`/music ` [TEXT]
+• موزیک درخواستی
+
+`block ` [@username] یا [reply]
+• بلاک کردن شخصی خاص در ربات
+
+`unblock ` [@username] یا [reply]
+• آزاد کردن شخصی خاص از بلاک در ربات
+
+`/info ` [@username]
+• دریافت اطلاعات کاربر
+
+`/gpinfo`
+• دریافت اطلاعات گروه
+
+`/sessions`
+• دریافت بازنشست های فعال اکانت
+
+`/save ` [REPLAY]
+• سیو کردن پیام و محتوا  در پیوی خود ربات
+
+`/id ` [reply]
+• دریافت ایدی عددی کابر
+
+`!setenemy ` [userid] یا [reply]
+• تنظیم دشمن با استفاده از ایدی عددی یا ریپلی
+
+`!delenemy ` [userid] یا [reply]
+• حذف دشمن با استفاده از ایدی عددی یا ریپلی
+
+`!clean enemylist`
+• پاک کردن لیست دشمنان
+
+× × × × × ×
+
+🍃 #بخش_تنظیم_جواب_سریع :
+
+`/setanswer ` [TEXT] | [ANSWER]
+• افزودن جواب سریع (متن اول متن دریافتی از کاربر و ددوم جوابی که ربات بدهد)
+
+`/delanswer ` [TEXT]
+• حذف جواب سریع
+
+`/clean answers`
+• حذف همه جواب سریع ها
+
+`/answerlist`
+• لیست همه جواب سریع ها
+
+× × × × × ×
+
+♻️ مقدار رم درحال استفاده : $mem_using مگابایت",
+'parse_mode' => 'markdown']);
+}
+if(preg_match("/^[\/\#\!]?(save)$/i", $text) && isset($message['reply_to_msg_id'])){
+$me = yield $MadelineProto->get_self();
+$me_id = $me['id'];
+yield $MadelineProto->messages->forwardMessages(['from_peer' => $peer, 'to_peer' => $me_id, 'id' => [$message['reply_to_msg_id']]]);
+      yield $MadelineProto->messages->editMessage(['peer' => $peer,'id' => $msg_id,'message' => "> Saved :D"]);
+     }
+ if(preg_match("/^[\/\#\!]?(typing) (on|off)$/i", $text)){
+preg_match("/^[\/\#\!]?(typing) (on|off)$/i", $text, $m);
+$data['typing'] = $m[2];
+file_put_contents("data.json", json_encode($data));
+      yield $MadelineProto->messages->editMessage(['peer' => $peer,'id' => $msg_id,'message' => "Typing Now Is $m[2]"]);
+     }
+ if(preg_match("/^[\/\#\!]?(echo) (on|off)$/i", $text)){
+preg_match("/^[\/\#\!]?(echo) (on|off)$/i", $text, $m);
+$data['echo'] = $m[2];
+file_put_contents("data.json", json_encode($data));
+      yield $MadelineProto->messages->editMessage(['peer' => $peer,'id' => $msg_id,'message' => "Echo Now Is $m[2]"]);
+     }
+ if(preg_match("/^[\/\#\!]?(markread) (on|off)$/i", $text)){
+preg_match("/^[\/\#\!]?(markread) (on|off)$/i", $text, $m);
+$data['markread'] = $m[2];
+file_put_contents("data.json", json_encode($data));
+      yield $MadelineProto->messages->editMessage(['peer' => $peer,'id' => $msg_id,'message' => "Markread Now Is $m[2]"]);
+     }
+ if(preg_match("/^[\/\#\!]?(info) (.*)$/i", $text)){
+preg_match("/^[\/\#\!]?(info) (.*)$/i", $text, $m);
+$mee = yield $MadelineProto->get_full_info($m[2]);
+$me = $mee['User'];
+$me_id = $me['id'];
+$me_status = $me['status']['_'];
+$me_bio = $mee['full']['about'];
+$me_common = $mee['full']['common_chats_count'];
+$me_name = $me['first_name'];
+$me_uname = $me['username'];
+$mes = "ID: $me_id \nName: $me_name \nUsername: @$me_uname \nStatus: $me_status \nBio: $me_bio \nCommon Groups Count: $me_common";
+yield $MadelineProto->messages->editMessage(['peer' => $peer,'id' => $msg_id,'message' => $mes]);
+     }
+ if(preg_match("/^[\/\#\!]?(block) (.*)$/i", $text)){
+preg_match("/^[\/\#\!]?(block) (.*)$/i", $text, $m);
+yield $MadelineProto->contacts->block(['id' => $m[2]]);
+yield $MadelineProto->messages->editMessage(['peer' => $peer,'id' => $msg_id,'message' => "Blocked!"]);
+     }
+ if(preg_match("/^[\/\#\!]?(unblock) (.*)$/i", $text)){
+preg_match("/^[\/\#\!]?(unblock) (.*)$/i", $text, $m);
+yield $MadelineProto->contacts->unblock(['id' => $m[2]]);
+yield $MadelineProto->messages->editMessage(['peer' => $peer,'id' => $msg_id,'message' => "UnBlocked!"]);
+     }
+ if(preg_match("/^[\/\#\!]?(checkusername) (@.*)$/i", $text)){
+preg_match("/^[\/\#\!]?(checkusername) (@.*)$/i", $text, $m);
+$check = yield $MadelineProto->account->checkUsername(['username' => str_replace("@", "", $m[2])]);
+if($check == false){
+yield $MadelineProto->messages->editMessage(['peer' => $peer,'id' => $msg_id,'message' => "Exists!"]);
+} else{
+yield $MadelineProto->messages->editMessage(['peer' => $peer,'id' => $msg_id,'message' => "Free!"]);
+}
+     }
+ if(preg_match("/^[\/\#\!]?(setfirstname) (.*)$/i", $text)){
+preg_match("/^[\/\#\!]?(setfirstname) (.*)$/i", $text, $m);
+yield $MadelineProto->account->updateProfile(['first_name' => $m[2]]);
+yield $MadelineProto->messages->editMessage(['peer' => $peer,'id' => $msg_id,'message' => "Done!"]);
+     }
+ if(preg_match("/^[\/\#\!]?(setlastname) (.*)$/i", $text)){
+preg_match("/^[\/\#\!]?(setlastname) (.*)$/i", $text, $m);
+yield $MadelineProto->account->updateProfile(['last_name' => $m[2]]);
+yield $MadelineProto->messages->editMessage(['peer' => $peer,'id' => $msg_id,'message' => "Done!"]);
+     }
+ if(preg_match("/^[\/\#\!]?(setbio) (.*)$/i", $text)){
+preg_match("/^[\/\#\!]?(setbio) (.*)$/i", $text, $m);
+yield $MadelineProto->account->updateProfile(['about' => $m[2]]);
+yield $MadelineProto->messages->editMessage(['peer' => $peer,'id' => $msg_id,'message' => "Done!"]);
+     }
+ if(preg_match("/^[\/\#\!]?(setusername) (.*)$/i", $text)){
+preg_match("/^[\/\#\!]?(setusername) (.*)$/i", $text, $m);
+yield $MadelineProto->account->updateUsername(['username' => $m[2]]);
+yield $MadelineProto->messages->editMessage(['peer' => $peer,'id' => $msg_id,'message' => "Done!"]);
+     }
+ if(preg_match("/^[\/\#\!]?(j) (.*)$/i", $text)){
+preg_match("/^[\/\#\!]?(j) (.*)$/i", $text, $m);
+yield $MadelineProto->channels->joinChannel(['channel' => $m[2]]);
+yield $MadelineProto->messages->editMessage(['peer' => $peer,'id' => $msg_id,'message' => "Joined!"]);
+     }
+if(preg_match("/^[\/\#\!]?(add2all) (@.*)$/i", $text)){
+preg_match("/^[\/\#\!]?(add2all) (@.*)$/i", $text, $m);
+$dialogs = yield $MadelineProto->get_dialogs();
+foreach ($dialogs as $peeer) {
+$peer_info = yield $MadelineProto->get_info($peeer);
+$peer_type = $peer_info['type'];
+if($peer_type == "supergroup"){
+  yield $MadelineProto->channels->inviteToChannel(['channel' => $peeer, 'users' => [$m[2]]]);
+}
+}
+yield $MadelineProto->messages->sendMessage(['peer' => $peer, 'message' => "Added To All SuperGroups"]);
+     }
+ if(preg_match("/^[\/\#\!]?(newanswer) (.*) \|\|\| (.*)$/i", $text)){
+preg_match("/^[\/\#\!]?(newanswer) (.*) \|\|\| (.*)$/i", $text, $m);
+$txxt = $m[2];
+$answeer = $m[3];
+if(!isset($data['answering'][$txxt])){
+$data['answering'][$txxt] = $answeer;
+file_put_contents("data.json", json_encode($data));
+yield $MadelineProto->messages->sendMessage(['peer' => $peer, 'message' => "New Word Added To AnswerList"]);
+} else{
+yield $MadelineProto->messages->sendMessage(['peer' => $peer, 'message' => "This Word Was In AnswerList"]);
+}
+     }
+ if(preg_match("/^[\/\#\!]?(delanswer) (.*)$/i", $text)){
+preg_match("/^[\/\#\!]?(delanswer) (.*)$/i", $text, $m);
+$txxt = $m[2];
+if(isset($data['answering'][$txxt])){
+unset($data['answering'][$txxt]);
+file_put_contents("data.json", json_encode($data));
+yield $MadelineProto->messages->sendMessage(['peer' => $peer, 'message' => "Word Deleted From AnswerList"]);
+} else{
+yield $MadelineProto->messages->sendMessage(['peer' => $peer, 'message' => "This Word Wasn't In AnswerList"]);
+}
+     }
+ if(preg_match("/^[\/\#\!]?(clean answers)$/i", $text)){
+$data['answering'] = [];
+file_put_contents("data.json", json_encode($data));
+yield $MadelineProto->messages->sendMessage(['peer' => $peer, 'message' => "AnswerList Is Now Empty!"]);
+     }
+ if(preg_match("/^[\/\#\!]?(setenemy) (.*)$/i", $text)){
+preg_match("/^[\/\#\!]?(setenemy) (.*)$/i", $text, $m);
+$mee = yield $MadelineProto->get_full_info($m[2]);
+$me = $mee['User'];
+$me_id = $me['id'];
+$me_name = $me['first_name'];
+if(!in_array($me_id, $data['enemies'])){
+$data['enemies'][] = $me_id;
+file_put_contents("data.json", json_encode($data));
+yield $MadelineProto->contacts->block(['id' => $m[2]]);
+yield $MadelineProto->messages->sendMessage(['peer' => $peer, 'message' => "$me_name is now in enemy list"]);
+} else {
+yield $MadelineProto->messages->sendMessage(['peer' => $peer, 'message' => "This User Was In EnemyList"]);
+}
+     }
+ if(preg_match("/^[\/\#\!]?(delenemy) (.*)$/i", $text)){
+preg_match("/^[\/\#\!]?(delenemy) (.*)$/i", $text, $m);
+$mee = yield $MadelineProto->get_full_info($m[2]);
+$me = $mee['User'];
+$me_id = $me['id'];
+$me_name = $me['first_name'];
+if(in_array($me_id, $data['enemies'])){
+$k = array_search($me_id, $data['enemies']);
+unset($data['enemies'][$k]);
+file_put_contents("data.json", json_encode($data));
+yield $MadelineProto->contacts->unblock(['id' => $m[2]]);
+yield $MadelineProto->messages->sendMessage(['peer' => $peer, 'message' => "$me_name deleted from enemy list"]);
+} else{
+yield $MadelineProto->messages->sendMessage(['peer' => $peer, 'message' => "This User Wasn't In EnemyList"]);
+}
+     }
+ if(preg_match("/^[\/\#\!]?(clean enemylist)$/i", $text)){
+$data['enemies'] = [];
+file_put_contents("data.json", json_encode($data));
+yield $MadelineProto->messages->sendMessage(['peer' => $peer, 'message' => "EnemyList Is Now Empty!"]);
+     }
+ if(preg_match("/^[\/\#\!]?(enemylist)$/i", $text)){
+if(count($data['enemies']) > 0){
+$txxxt = "EnemyList:
+";
+$counter = 1;
+foreach($data['enemies'] as $ene){
+  $mee = yield $MadelineProto->get_full_info($ene);
+  $me = $mee['User'];
+  $me_name = $me['first_name'];
+  $txxxt .= "$counter: $me_name \n";
+  $counter++;
+}
+yield $MadelineProto->messages->sendMessage(['peer' => $peer, 'message' => $txxxt]);
+} else{
+yield $MadelineProto->messages->sendMessage(['peer' => $peer, 'message' => "No Enemy!"]);
+}
+     }
+ if(preg_match("/^[\/\#\!]?(inv) (@.*)$/i", $text) && $update['_'] == "updateNewChannelMessage"){
+preg_match("/^[\/\#\!]?(inv) (@.*)$/i", $text, $m);
+$peer_info = yield $MadelineProto->get_info($message['to_id']);
+$peer_type = $peer_info['type'];
+if($peer_type == "supergroup"){
+yield $MadelineProto->channels->inviteToChannel(['channel' => $message['to_id'], 'users' => [$m[2]]]);
+} else{
+yield $MadelineProto->messages->sendMessage(['peer' => $peer, 'message' => "Just SuperGroups"]);
+}
+     }
+if ($text==  'لفت' or $text== 'left') {
+yield $MadelineProto->channels->leaveChannel(['channel' => $peer]);
+yield $MadelineProto->channels->deleteChannel(['channel' => $peer ]);
+}
+ if(preg_match("/^[\/\#\!]?(flood) ([0-9]+) (.*)$/i", $text)){
+preg_match("/^[\/\#\!]?(flood) ([0-9]+) (.*)$/i", $text, $m);
+$count = $m[2];
+$txt = $m[3];
+$spm = "";
+for($i=1; $i <= $count; $i++){
+$spm .= "$txt \n";
+}
+yield $MadelineProto->messages->sendMessage(['peer' => $peer, 'message' => $spm]);
+     }
+ if(preg_match("/^[\/\#\!]?(flood2) ([0-9]+) (.*)$/i", $text)){
+preg_match("/^[\/\#\!]?(flood2) ([0-9]+) (.*)$/i", $text, $m);
+$count = $m[2];
+$txt = $m[3];
+for($i=1; $i <= $count; $i++){
+yield $MadelineProto->messages->sendMessage(['peer' => $peer, 'message' => $txt]);
+}
+     }
+ if(preg_match("/^[\/\#\!]?(music) (.*)$/i", $text)){
+preg_match("/^[\/\#\!]?(music) (.*)$/i", $text, $m);
+$mu = $m[2];
+$messages_BotResults = yield $MadelineProto->messages->getInlineBotResults(['bot' => "@melobot", 'peer' => $peer, 'query' => $mu, 'offset' => '0']);
+$query_id = $messages_BotResults['query_id'];
+$query_res_id = $messages_BotResults['results'][rand(0, count($messages_BotResults['results']))]['id'];
+yield $MadelineProto->messages->sendInlineBotResult(['silent' => true, 'background' => false, 'clear_draft' => true, 'peer' => $peer, 'reply_to_msg_id' => $message['id'], 'query_id' => $query_id, 'id' => "$query_res_id"]);
+     }
+ if(preg_match("/^[\/\#\!]?(wiki) (.*)$/i", $text)){
+preg_match("/^[\/\#\!]?(wiki) (.*)$/i", $text, $m);
+$mu = $m[2];
+$messages_BotResults = yield $MadelineProto->messages->getInlineBotResults(['bot' => "@wiki", 'peer' => $peer, 'query' => $mu, 'offset' => '0']);
+$query_id = $messages_BotResults['query_id'];
+$query_res_id = $messages_BotResults['results'][rand(0, count($messages_BotResults['results']))]['id'];
+yield $MadelineProto->messages->sendInlineBotResult(['silent' => true, 'background' => false, 'clear_draft' => true, 'peer' => $peer, 'reply_to_msg_id' => $message['id'], 'query_id' => $query_id, 'id' => "$query_res_id"]);
+     }
+ if(preg_match("/^[\/\#\!]?(youtube) (.*)$/i", $text)){
+preg_match("/^[\/\#\!]?(youtube) (.*)$/i", $text, $m);
+$mu = $m[2];
+$messages_BotResults = yield $MadelineProto->messages->getInlineBotResults(['bot' => "@uVidBot", 'peer' => $peer, 'query' => $mu, 'offset' => '0']);
+$query_id = $messages_BotResults['query_id'];
+$query_res_id = $messages_BotResults['results'][rand(0, count($messages_BotResults['results']))]['id'];
+yield $MadelineProto->messages->sendInlineBotResult(['silent' => true, 'background' => false, 'clear_draft' => true, 'peer' => $peer, 'reply_to_msg_id' => $message['id'], 'query_id' => $query_id, 'id' => "$query_res_id"]);
+     }
+ if(preg_match("/^[\/\#\!]?(pic) (.*)$/i", $text)){
+preg_match("/^[\/\#\!]?(pic) (.*)$/i", $text, $m);
+$mu = $m[2];
+$messages_BotResults = yield $MadelineProto->messages->getInlineBotResults(['bot' => "@pic", 'peer' => $peer, 'query' => $mu, 'offset' => '0']);
+$query_id = $messages_BotResults['query_id'];
+$query_res_id = $messages_BotResults['results'][rand(0, count($messages_BotResults['results']))]['id'];
+yield $MadelineProto->messages->sendInlineBotResult(['silent' => true, 'background' => false, 'clear_draft' => true, 'peer' => $peer, 'reply_to_msg_id' => $message['id'], 'query_id' => $query_id, 'id' => "$query_res_id"]);
+     }
+ if(preg_match("/^[\/\#\!]?(gif) (.*)$/i", $text)){
+preg_match("/^[\/\#\!]?(gif) (.*)$/i", $text, $m);
+$mu = $m[2];
+$messages_BotResults = yield $MadelineProto->messages->getInlineBotResults(['bot' => "@gif", 'peer' => $peer, 'query' => $mu, 'offset' => '0']);
+$query_id = $messages_BotResults['query_id'];
+$query_res_id = $messages_BotResults['results'][rand(0, count($messages_BotResults['results']))]['id'];
+yield $MadelineProto->messages->sendInlineBotResult(['silent' => true, 'background' => false, 'clear_draft' => true, 'peer' => $peer, 'reply_to_msg_id' => $message['id'], 'query_id' => $query_id, 'id' => "$query_res_id"]);
+     }
+ if(preg_match("/^[\/\#\!]?(google) (.*)$/i", $text)){
+preg_match("/^[\/\#\!]?(google) (.*)$/i", $text, $m);
+$mu = $m[2];
+$messages_BotResults = yield $MadelineProto->messages->getInlineBotResults(['bot' => "@GoogleDEBot", 'peer' => $peer, 'query' => $mu, 'offset' => '0']);
+$query_id = $messages_BotResults['query_id'];
+$query_res_id = $messages_BotResults['results'][rand(0, count($messages_BotResults['results']))]['id'];
+yield $MadelineProto->messages->sendInlineBotResult(['silent' => true, 'background' => false, 'clear_draft' => true, 'peer' => $peer, 'reply_to_msg_id' => $message['id'], 'query_id' => $query_id, 'id' => "$query_res_id"]);
+     }
+ if(preg_match("/^[\/\#\!]?(joke)$/i", $text)){
+preg_match("/^[\/\#\!]?(joke)$/i", $text, $m);
+$messages_BotResults = yield $MadelineProto->messages->getInlineBotResults(['bot' => "@function_robot", 'peer' => $peer, 'query' => '', 'offset' => '0']);
+$query_id = $messages_BotResults['query_id'];
+$query_res_id = $messages_BotResults['results'][0]['id'];
+yield $MadelineProto->messages->sendInlineBotResult(['silent' => true, 'background' => false, 'clear_draft' => true, 'peer' => $peer, 'reply_to_msg_id' => $message['id'], 'query_id' => $query_id, 'id' => "$query_res_id"]);
+     }
+ if(preg_match("/^[\/\#\!]?(aasab)$/i", $text)){
+preg_match("/^[\/\#\!]?(aasab)$/i", $text, $m);
+$messages_BotResults = yield $MadelineProto->messages->getInlineBotResults(['bot' => "@function_robot", 'peer' => $peer, 'query' => '', 'offset' => '0']);
+$query_id = $messages_BotResults['query_id'];
+$query_res_id = $messages_BotResults['results'][1]['id'];
+yield $MadelineProto->messages->sendInlineBotResult(['silent' => true, 'background' => false, 'clear_draft' => true, 'peer' => $peer, 'reply_to_msg_id' => $message['id'], 'query_id' => $query_id, 'id' => "$query_res_id"]);
+     }
+ if(preg_match("/^[\/\#\!]?(like) (.*)$/i", $text)){
+preg_match("/^[\/\#\!]?(like) (.*)$/i", $text, $m);
+$mu = $m[2];
+$messages_BotResults = yield $MadelineProto->messages->getInlineBotResults(['bot' => "@like", 'peer' => $peer, 'query' => $mu, 'offset' => '0']);
+$query_id = $messages_BotResults['query_id'];
+$query_res_id = $messages_BotResults['results'][0]['id'];
+yield $MadelineProto->messages->sendInlineBotResult(['silent' => true, 'background' => false, 'clear_draft' => true, 'peer' => $peer, 'reply_to_msg_id' => $message['id'], 'query_id' => $query_id, 'id' => "$query_res_id"]);
+     }
+ if(preg_match("/^[\/\#\!]?(search) (.*)$/i", $text)){
+preg_match("/^[\/\#\!]?(search) (.*)$/i", $text, $m);
+$q = $m[2];
+$res_search = yield $MadelineProto->messages->search(['peer' => $peer, 'q' => $q, 'filter' => ['_' => 'inputMessagesFilterEmpty'], 'min_date' => 0, 'max_date' => time(), 'offset_id' => 0, 'add_offset' => 0, 'limit' => 50, 'max_id' => $message['id'], 'min_id' => 1]);
+$texts_count = count($res_search['messages']);
+$users_count = count($res_search['users']);
+yield $MadelineProto->messages->sendMessage(['peer' => $peer, 'message' => "Msgs Found: $texts_count \nFrom Users Count: $users_count"]);
+foreach($res_search['messages'] as $text){
+$textid = $text['id'];
+yield $MadelineProto->messages->forwardMessages(['from_peer' => $text, 'to_peer' => $peer, 'id' => [$textid]]);
+ }
+}
+ else if(preg_match("/^[\/\#\!]?(weather) (.*)$/i", $text)){
+preg_match("/^[\/\#\!]?(weather) (.*)$/i", $text, $m);
+$query = $m[2];
+$url = json_decode(file_get_contents("http://api.openweathermap.org/data/2.5/weather?q=".$query."&appid=eedbc05ba060c787ab0614cad1f2e12b&units=metric"), true);
+$city = $url["name"];
+$deg = $url["main"]["temp"];
+$type1 = $url["weather"][0]["main"];
+if($type1 == "Clear"){
+		$tpp = 'آفتابی☀';
+		file_put_contents('type.txt',$tpp);
+	}
+	elseif($type1 == "Clouds"){
+		$tpp = 'ابری ☁☁';
+		file_put_contents('type.txt',$tpp);
+	}
+	elseif($type1 == "Rain"){
+		 $tpp = 'بارانی ☔';
+file_put_contents('type.txt',$tpp);
+	}
+	elseif($type1 == "Thunderstorm"){
+		$tpp = 'طوفانی ☔☔☔☔';
+file_put_contents('type.txt',$tpp);
+	}
+	elseif($type1 == "Mist"){
+		$tpp = 'مه 💨';
+file_put_contents('type.txt',$tpp);
+	}
+  if($city != ''){
+$eagle_tm = file_get_contents('type.txt');
+  $txt = "دمای شهر $city هم اکنون $deg درجه سانتی گراد می باشد
+
+شرایط فعلی آب و هوا: $eagle_tm";
+yield $MadelineProto->messages->sendMessage(['peer' => $peer, 'message' => $txt]);
+unlink('type.txt');
+}else{
+ $txt = "⚠️شهر مورد نظر شما يافت نشد";
+yield $MadelineProto->messages->sendMessage(['peer' => $peer, 'message' => $txt]);
+ }
+}
+  else if(preg_match("/^[\/\#\!]?(sessions)$/i", $text)){
+$authorizations = yield $MadelineProto->account->getAuthorizations();
+$txxt="";
+foreach($authorizations['authorizations'] as $authorization){
+$txxt .="
+هش: ".$authorization['hash']."
+مدل دستگاه: ".$authorization['device_model']."
+سیستم عامل: ".$authorization['platform']."
+ورژن سیستم: ".$authorization['system_version']."
+api_id: ".$authorization['api_id']."
+app_name: ".$authorization['app_name']."
+نسخه برنامه: ".$authorization['app_version']."
+تاریخ ایجاد: ".date("Y-m-d H:i:s",$authorization['date_active'])."
+تاریخ فعال: ".date("Y-m-d H:i:s",$authorization['date_active'])."
+آی‌پی: ".$authorization['ip']."
+کشور: ".$authorization['country']."
+منطقه: ".$authorization['region']."
+
+====================";
+}
+yield $MadelineProto->messages->sendMessage(['peer' => $peer, 'message' => $txxt]);
+     }
+ if(preg_match("/^[\/\#\!]?(gpinfo)$/i", $text)){
+$peer_inf = yield $MadelineProto->get_full_info($message['to_id']);
+$peer_info = $peer_inf['Chat'];
+$peer_id = $peer_info['id'];
+$peer_title = $peer_info['title'];
+$peer_type = $peer_inf['type'];
+$peer_count = $peer_inf['full']['participants_count'];
+$des = $peer_inf['full']['about'];
+$mes = "ID: $peer_id \nTitle: $peer_title \nType: $peer_type \nMembers Count: $peer_count \nBio: $des";
+yield $MadelineProto->messages->sendMessage(['peer' => $peer, 'message' => $mes]);
+     }
+   }
+ if($data['power'] == "on"){
+   if ($from_id != $admin) {
+   if($message && $data['typing'] == "on" && $update['_'] == "updateNewChannelMessage"){
+$sendMessageTypingAction = ['_' => 'sendMessageTypingAction'];
+yield $MadelineProto->messages->setTyping(['peer' => $peer, 'action' => $sendMessageTypingAction]);
+     }
+     if($message && $data['echo'] == "on"){
+yield $MadelineProto->messages->forwardMessages(['from_peer' => $peer, 'to_peer' => $peer, 'id' => [$message['id']]]);
+     }
+     if($message && $data['markread'] == "on"){
+if(intval($peer) < 0){
+yield $MadelineProto->channels->readHistory(['channel' => $peer, 'max_id' => $message['id']]);
+yield $MadelineProto->channels->readMessageContents(['channel' => $peer, 'id' => [$message['id']] ]);
+} else{
+yield $MadelineProto->messages->readHistory(['peer' => $peer, 'max_id' => $message['id']]);
+}
+     }
+     if(strpos($text, '😐') !== false and $data['poker'] == "on"){
+yield $MadelineProto->messages->sendMessage(['peer' => $peer, 'message' => '😐', 'reply_to_msg_id' => $message['id']]);
+     }
+  $fohsh = ["😐","لطفا ادب حفظ شود"
+];
+if(in_array($from_id, $data['enemies'])){
+  $f = $fohsh[rand(0, count($fohsh)-1)];
+  yield $MadelineProto->messages->sendMessage(['peer' => $peer, 'message' => $f, 'reply_to_msg_id' => $msg_id]);
+}
+if(isset($data['answering'][$text])){
+  yield $MadelineProto->messages->sendMessage(['peer' => $peer, 'message' => $data['answering'][$text] , 'reply_to_msg_id' => $msg_id]);
+    }
+   }
+  }
+ }
+} catch(\Exception $e){
+/*if(strpos($e->getMessage(), 'Illegal string offset ') === false){
+yield $MadelineProto->messages->sendMessage(['peer' => 267785153, 'message' => "❗️Error : <code>".$e->getMessage()."</code>"."\n♻️ Line : ".$e->getLine(), 'parse_mode' => 'html']);
+}*/
+  }
+ }
+}
+
+// Madeline Tools
+register_shutdown_function('shutdown_function', $lock);
+closeConnection();
+$MadelineProto->async(true);
+$MadelineProto->loop(function () use ($MadelineProto) {
+  yield $MadelineProto->setEventHandler('\EventHandler');
+});
+$MadelineProto->loop();
+/*
+@datisnetwork
+*/
+?>
+<?php /* In the name of Allah = بسم اللّه الرّحمن الرّحیم */
+
+/*
+@datisnetwork
+*/
+
+/*	F	*/
+function jdate($format,$timestamp='',$none='',$time_zone='Asia/Tehran',$tr_num='fa'){
+
+ $T_sec=0;/* <= رفع خطاي زمان سرور ، با اعداد '+' و '-' بر حسب ثانيه */
+
+ if($time_zone!='local')date_default_timezone_set(($time_zone==='')?'Asia/Tehran':$time_zone);
+ $ts=$T_sec+(($timestamp==='')?time():tr_num($timestamp));
+ $date=explode('_',date('H_i_j_n_O_P_s_w_Y',$ts));
+ list($j_y,$j_m,$j_d)=gregorian_to_jalali($date[8],$date[3],$date[2]);
+ $doy=($j_m<7)?(($j_m-1)*31)+$j_d-1:(($j_m-7)*30)+$j_d+185;
+ $kab=(((($j_y%33)%4)-1)==((int)(($j_y%33)*0.05)))?1:0;
+ $sl=strlen($format);
+ $out='';
+ for($i=0; $i<$sl; $i++){
+  $sub=substr($format,$i,1);
+  if($sub=='\\'){
+	$out.=substr($format,++$i,1);
+	continue;
+  }
+  switch($sub){
+
+	case'E':case'R':case'x':case'X':
+	$out.='http://jdf.scr.ir';
+	break;
+
+	case'B':case'e':case'g':
+	case'G':case'h':case'I':
+	case'T':case'u':case'Z':
+	$out.=date($sub,$ts);
+	break;
+
+	case'a':
+	$out.=($date[0]<12)?'ق.ظ':'ب.ظ';
+	break;
+
+	case'A':
+	$out.=($date[0]<12)?'قبل از ظهر':'بعد از ظهر';
+	break;
+
+	case'b':
+	$out.=(int)($j_m/3.1)+1;
+	break;
+
+	case'c':
+	$out.=$j_y.'/'.$j_m.'/'.$j_d.' ،'.$date[0].':'.$date[1].':'.$date[6].' '.$date[5];
+	break;
+
+	case'C':
+	$out.=(int)(($j_y+99)/100);
+	break;
+
+	case'd':
+	$out.=($j_d<10)?'0'.$j_d:$j_d;
+	break;
+
+	case'D':
+	$out.=jdate_words(array('kh'=>$date[7]),' ');
+	break;
+
+	case'f':
+	$out.=jdate_words(array('ff'=>$j_m),' ');
+	break;
+
+	case'F':
+	$out.=jdate_words(array('mm'=>$j_m),' ');
+	break;
+
+	case'H':
+	$out.=$date[0];
+	break;
+
+	case'i':
+	$out.=$date[1];
+	break;
+
+	case'j':
+	$out.=$j_d;
+	break;
+
+	case'J':
+	$out.=jdate_words(array('rr'=>$j_d),' ');
+	break;
+
+	case'k';
+	$out.=tr_num(100-(int)($doy/($kab+365)*1000)/10,$tr_num);
+	break;
+
+	case'K':
+	$out.=tr_num((int)($doy/($kab+365)*1000)/10,$tr_num);
+	break;
+
+	case'l':
+	$out.=jdate_words(array('rh'=>$date[7]),' ');
+	break;
+
+	case'L':
+	$out.=$kab;
+	break;
+
+	case'm':
+	$out.=($j_m>9)?$j_m:'0'.$j_m;
+	break;
+
+	case'M':
+	$out.=jdate_words(array('km'=>$j_m),' ');
+	break;
+
+	case'n':
+	$out.=$j_m;
+	break;
+
+	case'N':
+	$out.=$date[7]+1;
+	break;
+
+	case'o':
+	$jdw=($date[7]==6)?0:$date[7]+1;
+	$dny=364+$kab-$doy;
+	$out.=($jdw>($doy+3) and $doy<3)?$j_y-1:(((3-$dny)>$jdw and $dny<3)?$j_y+1:$j_y);
+	break;
+
+	case'O':
+	$out.=$date[4];
+	break;
+
+	case'p':
+	$out.=jdate_words(array('mb'=>$j_m),' ');
+	break;
+
+	case'P':
+	$out.=$date[5];
+	break;
+
+	case'q':
+	$out.=jdate_words(array('sh'=>$j_y),' ');
+	break;
+
+	case'Q':
+	$out.=$kab+364-$doy;
+	break;
+
+	case'r':
+	$key=jdate_words(array('rh'=>$date[7],'mm'=>$j_m));
+	$out.=$date[0].':'.$date[1].':'.$date[6].' '.$date[4].' '.$key['rh'].'، '.$j_d.' '.$key['mm'].' '.$j_y;
+	break;
+
+	case's':
+	$out.=$date[6];
+	break;
+
+	case'S':
+	$out.='ام';
+	break;
+
+	case't':
+	$out.=($j_m!=12)?(31-(int)($j_m/6.5)):($kab+29);
+	break;
+
+	case'U':
+	$out.=$ts;
+	break;
+
+	case'v':
+	 $out.=jdate_words(array('ss'=>($j_y%100)),' ');
+	break;
+
+	case'V':
+	$out.=jdate_words(array('ss'=>$j_y),' ');
+	break;
+
+	case'w':
+	$out.=($date[7]==6)?0:$date[7]+1;
+	break;
+
+	case'W':
+	$avs=(($date[7]==6)?0:$date[7]+1)-($doy%7);
+	if($avs<0)$avs+=7;
+	$num=(int)(($doy+$avs)/7);
+	if($avs<4){
+	 $num++;
+	}elseif($num<1){
+	 $num=($avs==4 or $avs==((((($j_y%33)%4)-2)==((int)(($j_y%33)*0.05)))?5:4))?53:52;
+	}
+	$aks=$avs+$kab;
+	if($aks==7)$aks=0;
+	$out.=(($kab+363-$doy)<$aks and $aks<3)?'01':(($num<10)?'0'.$num:$num);
+	break;
+
+	case'y':
+	$out.=substr($j_y,2,2);
+	break;
+
+	case'Y':
+	$out.=$j_y;
+	break;
+
+	case'z':
+	$out.=$doy;
+	break;
+
+	default:$out.=$sub;
+  }
+ }
+ return($tr_num!='en')?tr_num($out,'fa','.'):$out;
+}
+
+/*	F	*/
+function jstrftime($format,$timestamp='',$none='',$time_zone='Asia/Tehran',$tr_num='fa'){
+
+ $T_sec=0;/* <= رفع خطاي زمان سرور ، با اعداد '+' و '-' بر حسب ثانيه */
+
+ if($time_zone!='local')date_default_timezone_set(($time_zone==='')?'Asia/Tehran':$time_zone);
+ $ts=$T_sec+(($timestamp==='')?time():tr_num($timestamp));
+ $date=explode('_',date('h_H_i_j_n_s_w_Y',$ts));
+ list($j_y,$j_m,$j_d)=gregorian_to_jalali($date[7],$date[4],$date[3]);
+ $doy=($j_m<7)?(($j_m-1)*31)+$j_d-1:(($j_m-7)*30)+$j_d+185;
+ $kab=(((($j_y%33)%4)-1)==((int)(($j_y%33)*0.05)))?1:0;
+ $sl=strlen($format);
+ $out='';
+ for($i=0; $i<$sl; $i++){
+  $sub=substr($format,$i,1);
+  if($sub=='%'){
+	$sub=substr($format,++$i,1);
+  }else{
+	$out.=$sub;
+	continue;
+  }
+  switch($sub){
+
+	/* Day */
+	case'a':
+	$out.=jdate_words(array('kh'=>$date[6]),' ');
+	break;
+
+	case'A':
+	$out.=jdate_words(array('rh'=>$date[6]),' ');
+	break;
+
+	case'd':
+	$out.=($j_d<10)?'0'.$j_d:$j_d;
+	break;
+
+	case'e':
+	$out.=($j_d<10)?' '.$j_d:$j_d;
+	break;
+
+	case'j':
+	$out.=str_pad($doy+1,3,0,STR_PAD_LEFT);
+	break;
+
+	case'u':
+	$out.=$date[6]+1;
+	break;
+
+	case'w':
+	$out.=($date[6]==6)?0:$date[6]+1;
+	break;
+
+	/* Week */
+	case'U':
+	$avs=(($date[6]<5)?$date[6]+2:$date[6]-5)-($doy%7);
+	if($avs<0)$avs+=7;
+	$num=(int)(($doy+$avs)/7)+1;
+	if($avs>3 or $avs==1)$num--;
+	$out.=($num<10)?'0'.$num:$num;
+	break;
+
+	case'V':
+	$avs=(($date[6]==6)?0:$date[6]+1)-($doy%7);
+	if($avs<0)$avs+=7;
+	$num=(int)(($doy+$avs)/7);
+	if($avs<4){
+	 $num++;
+	}elseif($num<1){
+	 $num=($avs==4 or $avs==((((($j_y%33)%4)-2)==((int)(($j_y%33)*0.05)))?5:4))?53:52;
+	}
+	$aks=$avs+$kab;
+	if($aks==7)$aks=0;
+	$out.=(($kab+363-$doy)<$aks and $aks<3)?'01':(($num<10)?'0'.$num:$num);
+	break;
+
+	case'W':
+	$avs=(($date[6]==6)?0:$date[6]+1)-($doy%7);
+	if($avs<0)$avs+=7;
+	$num=(int)(($doy+$avs)/7)+1;
+	if($avs>3)$num--;
+	$out.=($num<10)?'0'.$num:$num;
+	break;
+
+	/* Month */
+	case'b':
+	case'h':
+	$out.=jdate_words(array('km'=>$j_m),' ');
+	break;
+
+	case'B':
+	$out.=jdate_words(array('mm'=>$j_m),' ');
+	break;
+
+	case'm':
+	$out.=($j_m>9)?$j_m:'0'.$j_m;
+	break;
+
+	/* Year */
+	case'C':
+	$tmp=(int)($j_y/100);
+	$out.=($tmp>9)?$tmp:'0'.$tmp;
+	break;
+
+	case'g':
+	$jdw=($date[6]==6)?0:$date[6]+1;
+	$dny=364+$kab-$doy;
+	$out.=substr(($jdw>($doy+3) and $doy<3)?$j_y-1:(((3-$dny)>$jdw and $dny<3)?$j_y+1:$j_y),2,2);
+	break;
+
+	case'G':
+	$jdw=($date[6]==6)?0:$date[6]+1;
+	$dny=364+$kab-$doy;
+	$out.=($jdw>($doy+3) and $doy<3)?$j_y-1:(((3-$dny)>$jdw and $dny<3)?$j_y+1:$j_y);
+	break;
+
+	case'y':
+	$out.=substr($j_y,2,2);
+	break;
+
+	case'Y':
+	$out.=$j_y;
+	break;
+
+	/* Time */
+	case'H':
+	$out.=$date[1];
+	break;
+
+	case'I':
+	$out.=$date[0];
+	break;
+
+	case'l':
+	$out.=($date[0]>9)?$date[0]:' '.(int)$date[0];
+	break;
+
+	case'M':
+	$out.=$date[2];
+	break;
+
+	case'p':
+	$out.=($date[1]<12)?'قبل از ظهر':'بعد از ظهر';
+	break;
+
+	case'P':
+	$out.=($date[1]<12)?'ق.ظ':'ب.ظ';
+	break;
+
+	case'r':
+	$out.=$date[0].':'.$date[2].':'.$date[5].' '.(($date[1]<12)?'قبل از ظهر':'بعد از ظهر');
+	break;
+
+	case'R':
+	$out.=$date[1].':'.$date[2];
+	break;
+
+	case'S':
+	$out.=$date[5];
+	break;
+
+	case'T':
+	$out.=$date[1].':'.$date[2].':'.$date[5];
+	break;
+
+	case'X':
+	$out.=$date[0].':'.$date[2].':'.$date[5];
+	break;
+
+	case'z':
+	$out.=date('O',$ts);
+	break;
+
+	case'Z':
+	$out.=date('T',$ts);
+	break;
+
+	/* Time and Date Stamps */
+	case'c':
+	$key=jdate_words(array('rh'=>$date[6],'mm'=>$j_m));
+	$out.=$date[1].':'.$date[2].':'.$date[5].' '.date('P',$ts).' '.$key['rh'].'، '.$j_d.' '.$key['mm'].' '.$j_y;
+	break;
+
+	case'D':
+	$out.=substr($j_y,2,2).'/'.(($j_m>9)?$j_m:'0'.$j_m).'/'.(($j_d<10)?'0'.$j_d:$j_d);
+	break;
+
+	case'F':
+	$out.=$j_y.'-'.(($j_m>9)?$j_m:'0'.$j_m).'-'.(($j_d<10)?'0'.$j_d:$j_d);
+	break;
+
+	case's':
+	$out.=$ts;
+	break;
+
+	case'x':
+	$out.=substr($j_y,2,2).'/'.(($j_m>9)?$j_m:'0'.$j_m).'/'.(($j_d<10)?'0'.$j_d:$j_d);
+	break;
+
+	/* Miscellaneous */
+	case'n':
+	$out.="\n";
+	break;
+
+	case't':
+	$out.="\t";
+	break;
+
+	case'%':
+	$out.='%';
+	break;
+
+	default:$out.=$sub;
+  }
+ }
+ return($tr_num!='en')?tr_num($out,'fa','.'):$out;
+}
+
+/*	F	*/
+function jmktime($h='',$m='',$s='',$jm='',$jd='',$jy='',$none='',$timezone='Asia/Tehran'){
+ if($timezone!='local')date_default_timezone_set($timezone);
+ if($h===''){
+  return time();
+ }else{
+    list($h,$m,$s,$jm,$jd,$jy)=explode('_',tr_num($h.'_'.$m.'_'.$s.'_'.$jm.'_'.$jd.'_'.$jy));
+  if($m===''){
+   return mktime($h);
+  }else{
+   if($s===''){
+    return mktime($h,$m);
+   }else{
+    if($jm===''){
+     return mktime($h,$m,$s);
+    }else{
+     $jdate=explode('_',jdate('Y_j','','',$timezone,'en'));
+     if($jd===''){
+      list($gy,$gm,$gd)=jalali_to_gregorian($jdate[0],$jm,$jdate[1]);
+      return mktime($h,$m,$s,$gm);
+     }else{
+      if($jy===''){
+       list($gy,$gm,$gd)=jalali_to_gregorian($jdate[0],$jm,$jd);
+       return mktime($h,$m,$s,$gm,$gd);
+      }else{
+       list($gy,$gm,$gd)=jalali_to_gregorian($jy,$jm,$jd);
+       return mktime($h,$m,$s,$gm,$gd,$gy);
+      }
+     }
+    }
+   }
+  }
+ }
+}
+
+/*	F	*/
+function jgetdate($timestamp='',$none='',$timezone='Asia/Tehran',$tn='en'){
+ $ts=($timestamp==='')?time():tr_num($timestamp);
+ $jdate=explode('_',jdate('F_G_i_j_l_n_s_w_Y_z',$ts,'',$timezone,$tn));
+ return array(
+	'seconds'=>tr_num((int)tr_num($jdate[6]),$tn),
+	'minutes'=>tr_num((int)tr_num($jdate[2]),$tn),
+	'hours'=>$jdate[1],
+	'mday'=>$jdate[3],
+	'wday'=>$jdate[7],
+	'mon'=>$jdate[5],
+	'year'=>$jdate[8],
+	'yday'=>$jdate[9],
+	'weekday'=>$jdate[4],
+	'month'=>$jdate[0],
+	0=>tr_num($ts,$tn)
+ );
+}
+
+/*	F	*/
+function jcheckdate($jm,$jd,$jy){
+ list($jm,$jd,$jy)=explode('_',tr_num($jm.'_'.$jd.'_'.$jy));
+ $l_d=($jm==12)?((((($jy%33)%4)-1)==((int)(($jy%33)*0.05)))?30:29):31-(int)($jm/6.5);
+ return($jm>12 or $jd>$l_d or $jm<1 or $jd<1 or $jy<1)?false:true;
+}
+
+/*	F	*/
+function tr_num($str,$mod='en',$mf='٫'){
+ $num_a=array('0','1','2','3','4','5','6','7','8','9','.');
+ $key_a=array('۰','۱','۲','۳','۴','۵','۶','۷','۸','۹',$mf);
+ return($mod=='fa')?str_replace($num_a,$key_a,$str):str_replace($key_a,$num_a,$str);
+}
+
+/*	F	*/
+function jdate_words($array,$mod=''){
+ foreach($array as $type=>$num){
+  $num=(int)tr_num($num);
+  switch($type){
+
+	case'ss':
+	$sl=strlen($num);
+	$xy3=substr($num,2-$sl,1);
+	$h3=$h34=$h4='';
+	if($xy3==1){
+	 $p34='';
+	 $k34=array('ده','یازده','دوازده','سیزده','چهارده','پانزده','شانزده','هفده','هجده','نوزده');
+	 $h34=$k34[substr($num,2-$sl,2)-10];
+	}else{
+	 $xy4=substr($num,3-$sl,1);
+	 $p34=($xy3==0 or $xy4==0)?'':' و ';
+	 $k3=array('','','بیست','سی','چهل','پنجاه','شصت','هفتاد','هشتاد','نود');
+	 $h3=$k3[$xy3];
+	 $k4=array('','یک','دو','سه','چهار','پنج','شش','هفت','هشت','نه');
+	 $h4=$k4[$xy4];
+	}
+	$array[$type]=(($num>99)?str_replace(array('12','13','14','19','20')
+ ,array('هزار و دویست','هزار و سیصد','هزار و چهارصد','هزار و نهصد','دوهزار')
+ ,substr($num,0,2)).((substr($num,2,2)=='00')?'':' و '):'').$h3.$p34.$h34.$h4;
+	break;
+
+	case'mm':
+	$key=array('فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند');
+	$array[$type]=$key[$num-1];
+	break;
+
+	case'rr':
+	$key=array('یک','دو','سه','چهار','پنج','شش','هفت','هشت','نه','ده','یازده','دوازده','سیزده'
+ ,'چهارده','پانزده','شانزده','هفده','هجده','نوزده','بیست','بیست و یک','بیست و دو','بیست و سه'
+ ,'بیست و چهار','بیست و پنج','بیست و شش','بیست و هفت','بیست و هشت','بیست و نه','سی','سی و یک');
+	$array[$type]=$key[$num-1];
+	break;
+
+	case'rh':
+	$key=array('یکشنبه','دوشنبه','سه شنبه','چهارشنبه','پنجشنبه','جمعه','شنبه');
+	$array[$type]=$key[$num];
+	break;
+
+	case'sh':
+	$key=array('مار','اسب','گوسفند','میمون','مرغ','سگ','خوک','موش','گاو','پلنگ','خرگوش','نهنگ');
+	$array[$type]=$key[$num%12];
+	break;
+
+	case'mb':
+	$key=array('حمل','ثور','جوزا','سرطان','اسد','سنبله','میزان','عقرب','قوس','جدی','دلو','حوت');
+	$array[$type]=$key[$num-1];
+	break;
+
+	case'ff':
+	$key=array('بهار','تابستان','پاییز','زمستان');
+	$array[$type]=$key[(int)($num/3.1)];
+	break;
+
+	case'km':
+	$key=array('فر','ار','خر','تی‍','مر','شه‍','مه‍','آب‍','آذ','دی','به‍','اس‍');
+	$array[$type]=$key[$num-1];
+	break;
+
+	case'kh':
+	$key=array('ی','د','س','چ','پ','ج','ش');
+	$array[$type]=$key[$num];
+	break;
+
+	default:$array[$type]=$num;
+  }
+ }
+ return($mod==='')?$array:implode($mod,$array);
+}
+
+
+/** Gregorian & Jalali (Hijri_Shamsi,Solar) date converter Functions
+Author: JDF.SCR.IR =>> Download Full Version : http://jdf.scr.ir/jdf
+License: GNU/LGPL _ Open Source & Free _ Version: 2.70 : [2017=1395]
+--------------------------------------------------------------------
+1461 = 365*4 + 4/4   &  146097 = 365*400 + 400/4 - 400/100 + 400/400
+12053 = 365*33 + 32/4    &    36524 = 365*100 + 100/4 - 100/100   */
+
+/*	F	*/
+function gregorian_to_jalali($gy,$gm,$gd,$mod=''){
+	list($gy,$gm,$gd)=explode('_',tr_num($gy.'_'.$gm.'_'.$gd));/* <= Extra :اين سطر ، جزء تابع اصلي نيست */
+ $g_d_m=array(0,31,59,90,120,151,181,212,243,273,304,334);
+ if($gy > 1600){
+  $jy=979;
+  $gy-=1600;
+ }else{
+  $jy=0;
+  $gy-=621;
+ }
+ $gy2=($gm > 2)?($gy+1):$gy;
+ $days=(365*$gy) +((int)(($gy2+3)/4)) -((int)(($gy2+99)/100)) +((int)(($gy2+399)/400)) -80 +$gd +$g_d_m[$gm-1];
+ $jy+=33*((int)($days/12053));
+ $days%=12053;
+ $jy+=4*((int)($days/1461));
+ $days%=1461;
+ $jy+=(int)(($days-1)/365);
+ if($days > 365)$days=($days-1)%365;
+ if($days < 186){
+  $jm=1+(int)($days/31);
+  $jd=1+($days%31);
+ }else{
+  $jm=7+(int)(($days-186)/30);
+  $jd=1+(($days-186)%30);
+ }
+ return($mod==='')?array($jy,$jm,$jd):$jy .$mod .$jm .$mod .$jd;
+}
+
+/*	F	*/
+function jalali_to_gregorian($jy,$jm,$jd,$mod=''){
+	list($jy,$jm,$jd)=explode('_',tr_num($jy.'_'.$jm.'_'.$jd));/* <= Extra :اين سطر ، جزء تابع اصلي نيست */
+ if($jy > 979){
+  $gy=1600;
+  $jy-=979;
+ }else{
+  $gy=621;
+ }
+ $days=(365*$jy) +(((int)($jy/33))*8) +((int)((($jy%33)+3)/4)) +78 +$jd +(($jm<7)?($jm-1)*31:(($jm-7)*30)+186);
+ $gy+=400*((int)($days/146097));
+ $days%=146097;
+ if($days > 36524){
+  $gy+=100*((int)(--$days/36524));
+  $days%=36524;
+  if($days >= 365)$days++;
+ }
+ $gy+=4*((int)(($days)/1461));
+ $days%=1461;
+ $gy+=(int)(($days-1)/365);
+ if($days > 365)$days=($days-1)%365;
+ $gd=$days+1;
+ foreach(array(0,31,((($gy%4==0) and ($gy%100!=0)) or ($gy%400==0))?29:28 ,31,30,31,30,31,31,30,31,30,31) as $gm=>$v){
+  if($gd <= $v)break;
+  $gd-=$v;
+ }
+ return($mod==='')?array($gy,$gm,$gd):$gy .$mod .$gm .$mod .$gd;
+}
+
